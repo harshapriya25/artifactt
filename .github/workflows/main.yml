@@ -1,0 +1,39 @@
+name: Upload and Download Artifacts
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  upload-job:
+    name: Create and upload text file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create text file
+        run: |
+          echo "Hello from Job 1" > message.txt
+          echo "This file was transferred using GitHub Actions artifacts." >> message.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-text-file
+          path: message.txt
+          if-no-files-found: error
+
+  download-job:
+    name: Download and print text file
+    runs-on: ubuntu-latest
+    needs: upload-job
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: my-text-file
+
+      - name: Print downloaded file
+        run: |
+          echo "Downloaded file content:"
+          cat message.txt
